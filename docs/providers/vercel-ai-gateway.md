@@ -43,6 +43,58 @@ moltbot onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
+## Provider routing options
+
+Vercel AI Gateway supports provider routing options to control how requests are routed across providers. Configure these via model `params`:
+
+- `gatewayOrder`: Array of provider slugs specifying the fallback order (e.g., `["bedrock", "anthropic"]`)
+- `gatewayOnly`: Array of provider slugs to restrict routing to specific providers
+- `gatewayModels`: Array of fallback model IDs to try if the primary model fails
+
+Example configuration:
+
+```json5
+{
+  agents: {
+    defaults: {
+      model: { primary: "vercel-ai-gateway/anthropic/claude-opus-4.5" },
+      models: {
+        "vercel-ai-gateway/anthropic/claude-opus-4.5": {
+          params: {
+            gatewayOrder: ["bedrock", "anthropic"], // Try Bedrock first, then Anthropic
+            gatewayOnly: ["bedrock", "anthropic", "vertex"], // Restrict to these providers
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+With model fallbacks:
+
+```json5
+{
+  agents: {
+    defaults: {
+      model: { primary: "vercel-ai-gateway/openai/gpt-4o" },
+      models: {
+        "vercel-ai-gateway/openai/gpt-4o": {
+          params: {
+            gatewayModels: [
+              "openai/gpt-5-nano",
+              "gemini-2.0-flash"
+            ] // Fallback models if primary fails
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+See the [Vercel AI Gateway provider options documentation](https://vercel.com/docs/ai-gateway/models-and-providers/provider-options) for details on provider routing behavior.
+
 ## Environment note
 
 If the Gateway runs as a daemon (launchd/systemd), make sure `AI_GATEWAY_API_KEY`

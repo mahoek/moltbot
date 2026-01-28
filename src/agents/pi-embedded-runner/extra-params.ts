@@ -45,7 +45,10 @@ function createStreamFnWithExtraParams(
     return undefined;
   }
 
-  const streamParams: Partial<SimpleStreamOptions> & { cacheControlTtl?: CacheControlTtl } = {};
+  const streamParams: Partial<SimpleStreamOptions> & {
+    cacheControlTtl?: CacheControlTtl;
+    providerOptions?: { gateway?: Record<string, unknown> };
+  } = {};
   if (typeof extraParams.temperature === "number") {
     streamParams.temperature = extraParams.temperature;
   }
@@ -55,6 +58,23 @@ function createStreamFnWithExtraParams(
   const cacheControlTtl = resolveCacheControlTtl(extraParams, provider, modelId);
   if (cacheControlTtl) {
     streamParams.cacheControlTtl = cacheControlTtl;
+  }
+
+  // Handle Vercel AI Gateway provider routing options
+  if (provider === "vercel-ai-gateway") {
+    const gatewayOptions: Record<string, unknown> = {};
+    if (Array.isArray(extraParams.gatewayOrder) && extraParams.gatewayOrder.length > 0) {
+      gatewayOptions.order = extraParams.gatewayOrder;
+    }
+    if (Array.isArray(extraParams.gatewayOnly) && extraParams.gatewayOnly.length > 0) {
+      gatewayOptions.only = extraParams.gatewayOnly;
+    }
+    if (Array.isArray(extraParams.gatewayModels) && extraParams.gatewayModels.length > 0) {
+      gatewayOptions.models = extraParams.gatewayModels;
+    }
+    if (Object.keys(gatewayOptions).length > 0) {
+      streamParams.providerOptions = { gateway: gatewayOptions };
+    }
   }
 
   if (Object.keys(streamParams).length === 0) {
