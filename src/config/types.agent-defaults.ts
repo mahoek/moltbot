@@ -12,10 +12,28 @@ import type {
 } from "./types.sandbox.js";
 import type { MemorySearchConfig } from "./types.tools.js";
 
+/**
+ * OpenRouter provider routing preferences.
+ * Controls which infrastructure providers handle requests.
+ * @see https://openrouter.ai/docs/guides/routing/provider-selection
+ */
+export type OpenRouterProviderConfig = {
+  /** Allowlist: only use these providers (e.g., ["anthropic", "openai"]). */
+  only?: string[];
+  /** Blocklist: never use these providers. */
+  ignore?: string[];
+  /** Try providers in this order. */
+  order?: string[];
+  /** Enable/disable fallback to other providers (default: true). */
+  allow_fallbacks?: boolean;
+};
+
 export type AgentModelEntryConfig = {
   alias?: string;
   /** Provider-specific API parameters (e.g., GLM-4.7 thinking mode). */
   params?: Record<string, unknown>;
+  /** OpenRouter provider routing preferences (only applies to openrouter/* models). */
+  provider?: OpenRouterProviderConfig;
 };
 
 export type AgentModelListConfig = {

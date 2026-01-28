@@ -28,6 +28,41 @@ moltbot onboard --auth-choice apiKey --token-provider openrouter --token "$OPENR
 }
 ```
 
+## Provider routing
+
+OpenRouter can route requests to different infrastructure providers. You can control which
+providers handle your requests using the `provider` config:
+
+```json5
+{
+  agents: {
+    defaults: {
+      models: {
+        "openrouter/anthropic/claude-sonnet-4": {
+          provider: {
+            only: ["anthropic"],       // Only use Anthropic's servers
+            allow_fallbacks: false     // Don't fall back to other providers
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Provider options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `only` | `string[]` | Allowlist: only use these providers |
+| `ignore` | `string[]` | Blocklist: never use these providers |
+| `order` | `string[]` | Try providers in this order |
+| `allow_fallbacks` | `boolean` | Enable/disable fallback (default: true) |
+
+Common provider slugs: `anthropic`, `openai`, `together`, `deepinfra`, `azure`, `google`, `aws-bedrock`
+
+See [OpenRouter provider routing docs](https://openrouter.ai/docs/guides/routing/provider-selection) for the full list.
+
 ## Notes
 
 - Model refs are `openrouter/<provider>/<model>`.

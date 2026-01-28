@@ -6,11 +6,15 @@ export type ModelApi =
   | "github-copilot"
   | "bedrock-converse-stream";
 
+import type { OpenRouterProviderConfig } from "./types.agent-defaults.js";
+
 export type ModelCompatConfig = {
   supportsStore?: boolean;
   supportsDeveloperRole?: boolean;
   supportsReasoningEffort?: boolean;
   maxTokensField?: "max_completion_tokens" | "max_tokens";
+  /** OpenRouter provider routing preferences (injected at runtime). */
+  openRouterRouting?: OpenRouterProviderConfig;
 };
 
 export type ModelProviderAuthMode = "api-key" | "aws-sdk" | "oauth" | "token";

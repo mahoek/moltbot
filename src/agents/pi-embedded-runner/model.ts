@@ -68,7 +68,7 @@ export function resolveModel(
       (entry) => normalizeProviderId(entry.provider) === normalizedProvider && entry.id === modelId,
     );
     if (inlineMatch) {
-      const normalized = normalizeModelCompat(inlineMatch as Model<Api>);
+      const normalized = normalizeModelCompat(inlineMatch as Model<Api>, cfg);
       return {
         model: normalized,
         authStorage,
@@ -77,18 +77,21 @@ export function resolveModel(
     }
     const providerCfg = providers[provider];
     if (providerCfg || modelId.startsWith("mock-")) {
-      const fallbackModel: Model<Api> = normalizeModelCompat({
-        id: modelId,
-        name: modelId,
-        api: providerCfg?.api ?? "openai-responses",
-        provider,
-        baseUrl: providerCfg?.baseUrl,
-        reasoning: false,
-        input: ["text"],
-        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-        contextWindow: providerCfg?.models?.[0]?.contextWindow ?? DEFAULT_CONTEXT_TOKENS,
-        maxTokens: providerCfg?.models?.[0]?.maxTokens ?? DEFAULT_CONTEXT_TOKENS,
-      } as Model<Api>);
+      const fallbackModel: Model<Api> = normalizeModelCompat(
+        {
+          id: modelId,
+          name: modelId,
+          api: providerCfg?.api ?? "openai-responses",
+          provider,
+          baseUrl: providerCfg?.baseUrl,
+          reasoning: false,
+          input: ["text"],
+          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+          contextWindow: providerCfg?.models?.[0]?.contextWindow ?? DEFAULT_CONTEXT_TOKENS,
+          maxTokens: providerCfg?.models?.[0]?.maxTokens ?? DEFAULT_CONTEXT_TOKENS,
+        } as Model<Api>,
+        cfg,
+      );
       return { model: fallbackModel, authStorage, modelRegistry };
     }
     return {
@@ -97,5 +100,5 @@ export function resolveModel(
       modelRegistry,
     };
   }
-  return { model: normalizeModelCompat(model), authStorage, modelRegistry };
+  return { model: normalizeModelCompat(model, cfg), authStorage, modelRegistry };
 }
