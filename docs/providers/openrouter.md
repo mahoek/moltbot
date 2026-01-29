@@ -33,3 +33,31 @@ moltbot onboard --auth-choice apiKey --token-provider openrouter --token "$OPENR
 - Model refs are `openrouter/<provider>/<model>`.
 - For more model/provider options, see [/concepts/model-providers](/concepts/model-providers).
 - OpenRouter uses a Bearer token with your API key under the hood.
+
+### Provider routing
+
+Control which infrastructure providers handle requests via `agents.defaults.models`:
+
+```json5
+{
+  agents: {
+    defaults: {
+      models: {
+        "openrouter/anthropic/claude-sonnet-4-5": {
+          provider: {
+            only: ["anthropic"],
+            ignore: ["openai"],
+            order: ["anthropic", "openai"],
+            allow_fallbacks: true
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+- `only`: allowlist of providers (e.g., `["anthropic"]`).
+- `ignore`: blocklist of providers.
+- `order`: preferred provider order.
+- `allow_fallbacks`: enable/disable fallback (default: true).

@@ -43,6 +43,32 @@ moltbot onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
+## Provider routing
+
+Control routing via `agents.defaults.models`:
+
+```json5
+{
+  agents: {
+    defaults: {
+      models: {
+        "vercel-ai-gateway/anthropic/claude-opus-4.5": {
+          params: {
+            gatewayOrder: ["bedrock", "anthropic"],
+            gatewayOnly: ["bedrock"],
+            gatewayModels: ["anthropic/claude-opus-4-5"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+- `gatewayOrder`: preferred provider order.
+- `gatewayOnly`: allowlist of providers.
+- `gatewayModels`: allowlist of model IDs.
+
 ## Environment note
 
 If the Gateway runs as a daemon (launchd/systemd), make sure `AI_GATEWAY_API_KEY`
