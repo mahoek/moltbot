@@ -23,6 +23,12 @@ export function resolveExtraParams(params: {
 
 type CacheControlTtl = "5m" | "1h";
 
+type GatewayOptions = {
+  order?: string[];
+  only?: string[];
+  models?: string[];
+};
+
 function resolveCacheControlTtl(
   extraParams: Record<string, unknown> | undefined,
   provider: string,
@@ -61,16 +67,17 @@ function createStreamFnWithExtraParams(
   }
 
   // Handle Vercel AI Gateway provider routing options
-  if (provider === "vercel-ai-gateway") {
+  if (provider === "vercel-ai-gateway" && extraParams.gateway) {
+    const gateway = extraParams.gateway as GatewayOptions;
     const gatewayOptions: Record<string, unknown> = {};
-    if (Array.isArray(extraParams.gatewayOrder) && extraParams.gatewayOrder.length > 0) {
-      gatewayOptions.order = extraParams.gatewayOrder;
+    if (Array.isArray(gateway.order) && gateway.order.length > 0) {
+      gatewayOptions.order = gateway.order;
     }
-    if (Array.isArray(extraParams.gatewayOnly) && extraParams.gatewayOnly.length > 0) {
-      gatewayOptions.only = extraParams.gatewayOnly;
+    if (Array.isArray(gateway.only) && gateway.only.length > 0) {
+      gatewayOptions.only = gateway.only;
     }
-    if (Array.isArray(extraParams.gatewayModels) && extraParams.gatewayModels.length > 0) {
-      gatewayOptions.models = extraParams.gatewayModels;
+    if (Array.isArray(gateway.models) && gateway.models.length > 0) {
+      gatewayOptions.models = gateway.models;
     }
     if (Object.keys(gatewayOptions).length > 0) {
       streamParams.providerOptions = { gateway: gatewayOptions };

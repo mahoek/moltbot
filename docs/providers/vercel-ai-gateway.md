@@ -54,9 +54,11 @@ Control routing via `agents.defaults.models`:
       models: {
         "vercel-ai-gateway/anthropic/claude-opus-4.5": {
           params: {
-            gatewayOrder: ["bedrock", "anthropic"],
-            gatewayOnly: ["bedrock"],
-            gatewayModels: ["anthropic/claude-opus-4-5"]
+            gateway: {
+              order: ["bedrock", "anthropic"],
+              only: ["bedrock"],
+              models: ["anthropic/claude-opus-4-5"]
+            }
           }
         }
       }
@@ -65,9 +67,9 @@ Control routing via `agents.defaults.models`:
 }
 ```
 
-- `gatewayOrder`: preferred provider order.
-- `gatewayOnly`: allowlist of providers.
-- `gatewayModels`: allowlist of model IDs.
+- `gateway.order`: preferred provider order.
+- `gateway.only`: allowlist of providers.
+- `gateway.models`: allowlist of model IDs.
 
 ## Environment note
 

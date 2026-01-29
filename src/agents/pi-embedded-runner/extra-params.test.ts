@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { StreamFn } from "@mariozechner/pi-agent-core";
-import type { Model } from "@mariozechner/pi-ai";
 import { streamSimple } from "@mariozechner/pi-ai";
 import type { MoltbotConfig } from "../../config/config.js";
-import {
-  applyExtraParamsToAgent,
-  resolveExtraParams,
-} from "./extra-params.js";
+import { applyExtraParamsToAgent, resolveExtraParams } from "./extra-params.js";
 
 describe("extra-params", () => {
   describe("resolveExtraParams", () => {
@@ -17,8 +12,10 @@ describe("extra-params", () => {
             models: {
               "vercel-ai-gateway/anthropic/claude-opus-4.5": {
                 params: {
-                  gatewayOrder: ["bedrock", "anthropic"],
-                  gatewayOnly: ["bedrock", "anthropic"],
+                  gateway: {
+                    order: ["bedrock", "anthropic"],
+                    only: ["bedrock", "anthropic"],
+                  },
                 },
               },
             },
@@ -33,8 +30,10 @@ describe("extra-params", () => {
       });
 
       expect(result).toEqual({
-        gatewayOrder: ["bedrock", "anthropic"],
-        gatewayOnly: ["bedrock", "anthropic"],
+        gateway: {
+          order: ["bedrock", "anthropic"],
+          only: ["bedrock", "anthropic"],
+        },
       });
     });
 
@@ -63,12 +62,11 @@ describe("extra-params", () => {
             models: {
               "vercel-ai-gateway/anthropic/claude-opus-4.5": {
                 params: {
-                  gatewayOrder: ["bedrock", "anthropic"],
-                  gatewayOnly: ["bedrock", "anthropic", "vertex"],
-                  gatewayModels: [
-                    "anthropic/claude-opus-4.5",
-                    "anthropic/claude-sonnet-4.5",
-                  ],
+                  gateway: {
+                    order: ["bedrock", "anthropic"],
+                    only: ["bedrock", "anthropic", "vertex"],
+                    models: ["anthropic/claude-opus-4.5", "anthropic/claude-sonnet-4.5"],
+                  },
                 },
               },
             },
@@ -79,12 +77,7 @@ describe("extra-params", () => {
       const agent = { streamFn: streamSimple };
       const originalStreamFn = agent.streamFn;
 
-      applyExtraParamsToAgent(
-        agent,
-        cfg,
-        "vercel-ai-gateway",
-        "anthropic/claude-opus-4.5",
-      );
+      applyExtraParamsToAgent(agent, cfg, "vercel-ai-gateway", "anthropic/claude-opus-4.5");
 
       // Should create a wrapper function
       expect(agent.streamFn).toBeDefined();
@@ -98,7 +91,9 @@ describe("extra-params", () => {
             models: {
               "openai/gpt-5.2": {
                 params: {
-                  gatewayOrder: ["bedrock", "anthropic"],
+                  gateway: {
+                    order: ["bedrock", "anthropic"],
+                  },
                   temperature: 0.7,
                 },
               },
@@ -124,9 +119,11 @@ describe("extra-params", () => {
             models: {
               "vercel-ai-gateway/anthropic/claude-opus-4.5": {
                 params: {
-                  gatewayOrder: [],
-                  gatewayOnly: [],
-                  gatewayModels: [],
+                  gateway: {
+                    order: [],
+                    only: [],
+                    models: [],
+                  },
                 },
               },
             },
@@ -137,12 +134,7 @@ describe("extra-params", () => {
       const agent = { streamFn: streamSimple };
       const originalStreamFn = agent.streamFn;
 
-      applyExtraParamsToAgent(
-        agent,
-        cfg,
-        "vercel-ai-gateway",
-        "anthropic/claude-opus-4.5",
-      );
+      applyExtraParamsToAgent(agent, cfg, "vercel-ai-gateway", "anthropic/claude-opus-4.5");
 
       // Empty arrays should not create a wrapper
       expect(agent.streamFn).toBe(originalStreamFn);
@@ -155,7 +147,9 @@ describe("extra-params", () => {
             models: {
               "vercel-ai-gateway/anthropic/claude-opus-4.5": {
                 params: {
-                  gatewayOrder: ["bedrock"],
+                  gateway: {
+                    order: ["bedrock"],
+                  },
                 },
               },
             },
@@ -166,12 +160,7 @@ describe("extra-params", () => {
       const agent = { streamFn: streamSimple };
       const originalStreamFn = agent.streamFn;
 
-      applyExtraParamsToAgent(
-        agent,
-        cfg,
-        "vercel-ai-gateway",
-        "anthropic/claude-opus-4.5",
-      );
+      applyExtraParamsToAgent(agent, cfg, "vercel-ai-gateway", "anthropic/claude-opus-4.5");
 
       // Should create a wrapper even with just one option
       expect(agent.streamFn).toBeDefined();
@@ -185,8 +174,10 @@ describe("extra-params", () => {
             models: {
               "vercel-ai-gateway/anthropic/claude-opus-4.5": {
                 params: {
-                  gatewayOrder: "not-an-array",
-                  gatewayOnly: ["bedrock"],
+                  gateway: {
+                    order: "not-an-array" as unknown as string[],
+                    only: ["bedrock"],
+                  },
                 },
               },
             },
@@ -197,14 +188,9 @@ describe("extra-params", () => {
       const agent = { streamFn: streamSimple };
       const originalStreamFn = agent.streamFn;
 
-      applyExtraParamsToAgent(
-        agent,
-        cfg,
-        "vercel-ai-gateway",
-        "anthropic/claude-opus-4.5",
-      );
+      applyExtraParamsToAgent(agent, cfg, "vercel-ai-gateway", "anthropic/claude-opus-4.5");
 
-      // Should create wrapper for valid array (gatewayOnly), ignoring invalid gatewayOrder
+      // Should create wrapper for valid array (gateway.only), ignoring invalid gateway.order
       expect(agent.streamFn).toBeDefined();
       expect(agent.streamFn).not.toBe(originalStreamFn);
     });
